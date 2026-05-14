@@ -45,6 +45,14 @@ const Home = () => {
       
       const { data } = await axios.get(url);
       setFoodItems(data);
+
+      // Fallback: If no items found nearby, fetch all items globally
+      if (data.length === 0 && lat && lng) {
+        toast.info('No restaurants found nearby. Showing available food from other cities!');
+        const fallbackUrl = `/food${maxPrice ? `?maxPrice=${maxPrice}` : ''}`;
+        const fallbackRes = await axios.get(fallbackUrl);
+        setFoodItems(fallbackRes.data);
+      }
     } catch (error) {
       toast.error('Failed to load food items');
     } finally {
