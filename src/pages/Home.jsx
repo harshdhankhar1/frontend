@@ -26,7 +26,7 @@ const Home = () => {
   const [userLocation, setUserLocation] = useState(null);
   
   // Filters
-  const [maxDistance, setMaxDistance] = useState(50000000); // 50,000km to ensure dummy data shows globally
+  const [maxDistance, setMaxDistance] = useState(10000); // 10km default
   const [maxPrice, setMaxPrice] = useState(50);
   
   const { user } = useContext(AuthContext);
@@ -199,6 +199,11 @@ const Home = () => {
                     <MapPin size={14} /> {item.restaurantId?.name || 'Restaurant'}
                     {distanceStr && <span style={{ marginLeft: 'auto', fontSize: '0.8rem' }}>• {distanceStr}</span>}
                   </div>
+                  {item.restaurantId?.address && (
+                    <div className="text-muted mt-1 flex items-center gap-1" style={{ fontSize: '0.8rem' }}>
+                      {item.restaurantId.address}
+                    </div>
+                  )}
 
                   {item.pickupTime && (
                     <div className="food-pickup text-muted mt-1 flex items-center gap-1" style={{ fontSize: '0.9rem' }}>

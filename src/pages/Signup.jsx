@@ -9,6 +9,7 @@ const Signup = () => {
     email: '',
     password: '',
     role: 'user',
+    address: '',
   });
   const [loading, setLoading] = useState(false);
   const { register } = useContext(AuthContext);
@@ -22,8 +23,8 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Get location for restaurants
-    if (formData.role === 'restaurant' && navigator.geolocation) {
+    // Get location for all users
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const dataWithLocation = {
@@ -107,6 +108,20 @@ const Signup = () => {
               <option value="restaurant">Restaurant (Seller)</option>
             </select>
           </div>
+          {formData.role === 'restaurant' && (
+            <div className="form-group">
+              <label className="form-label">Address</label>
+              <input 
+                type="text" 
+                name="address"
+                className="form-input" 
+                placeholder="123 Main St, City"
+                value={formData.address}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          )}
           
           <button type="submit" className="btn btn-primary mt-4" style={{ width: '100%' }} disabled={loading}>
             {loading ? 'Creating Account...' : 'Sign Up'}
