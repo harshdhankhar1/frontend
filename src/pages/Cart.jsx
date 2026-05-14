@@ -4,6 +4,7 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Trash2, ShoppingBag } from 'lucide-react';
+import { formatCurrency } from '../utils/formatCurrency';
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -52,7 +53,8 @@ const Cart = () => {
   };
 
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
+    const total = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return formatCurrency(total);
   };
 
   const handleCheckout = async () => {
@@ -114,7 +116,7 @@ const Cart = () => {
                   <div style={{ flex: 1 }}>
                     <div className="font-bold">{item.name}</div>
                     <div className="text-sm text-muted">{item.restaurantName}</div>
-                    <div className="text-primary">${item.price.toFixed(2)} each</div>
+                    <div className="text-primary">{formatCurrency(item.price)} each</div>
                   </div>
                   
                   <div className="flex items-center gap-3">
@@ -136,7 +138,7 @@ const Cart = () => {
                   </div>
                   
                   <div className="ml-4 font-bold w-16 text-right">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    {formatCurrency(item.price * item.quantity)}
                   </div>
                   
                   <button 
@@ -150,7 +152,7 @@ const Cart = () => {
               
               <div className="border-t border-gray-600 mt-4 pt-4 flex justify-between items-center font-bold text-xl">
                 <span>Total:</span>
-                <span>${calculateTotal()}</span>
+                <span>{calculateTotal()}</span>
               </div>
               
               <button 
@@ -187,13 +189,13 @@ const Cart = () => {
                     {order.items.map((item, idx) => (
                       <div key={idx} className="flex justify-between text-sm">
                         <span>{item.quantity}x {item.foodId?.name}</span>
-                        <span>${item.price * item.quantity}</span>
+                        <span>{formatCurrency(item.price * item.quantity)}</span>
                       </div>
                     ))}
                   </div>
                   <div className="border-t border-gray-600 mt-2 pt-2 font-bold flex justify-between">
                     <span>Total:</span>
-                    <span>${order.totalAmount.toFixed(2)}</span>
+                    <span>{formatCurrency(order.totalAmount)}</span>
                   </div>
                 </div>
               ))}

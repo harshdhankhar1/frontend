@@ -4,6 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { MapPin, Clock, DollarSign, Filter, Tag } from 'lucide-react';
 import MapComponent from '../components/MapComponent';
+import { formatCurrency } from '../utils/formatCurrency';
 
 // Haversine formula to calculate distance between two coordinates in km
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -133,7 +134,7 @@ const Home = () => {
             />
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-sm">Max Price ($):</label>
+            <label className="text-sm">Max Price (₹):</label>
             <input 
               type="number" 
               className="form-input" 
@@ -212,8 +213,8 @@ const Home = () => {
                   )}
 
                   <div className="food-price-row mt-3 flex items-center gap-2">
-                    <span className="food-price text-xl font-bold text-primary">${item.price.toFixed(2)}</span>
-                    <span className="food-original-price line-through text-muted text-sm">${item.originalPrice.toFixed(2)}</span>
+                    <span className="food-price text-xl font-bold text-primary">{formatCurrency(item.price)}</span>
+                    <span className="food-original-price line-through text-muted text-sm">{formatCurrency(item.originalPrice)}</span>
                     <span className="food-stat ml-auto text-sm text-secondary-color font-bold" style={{ backgroundColor: 'rgba(235, 87, 87, 0.1)', padding: '2px 8px', borderRadius: '12px' }}>
                       Save {Math.round((1 - item.price / item.originalPrice) * 100)}%
                     </span>

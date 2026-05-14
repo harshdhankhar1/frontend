@@ -3,6 +3,7 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Plus, Trash2, Package } from 'lucide-react';
+import { formatCurrency } from '../utils/formatCurrency';
 
 const Dashboard = () => {
   const [foodItems, setFoodItems] = useState([]);
@@ -104,7 +105,7 @@ const Dashboard = () => {
             </div>
             <div className="flex gap-4">
               <div className="form-group" style={{ flex: 1 }}>
-                <label className="form-label">Original Price ($)</label>
+                <label className="form-label">Original Price (₹)</label>
                 <input 
                   type="number" 
                   step="0.01"
@@ -115,7 +116,7 @@ const Dashboard = () => {
                 />
               </div>
               <div className="form-group" style={{ flex: 1 }}>
-                <label className="form-label">Discount Price ($)</label>
+                <label className="form-label">Discount Price (₹)</label>
                 <input 
                   type="number" 
                   step="0.01"
@@ -169,7 +170,7 @@ const Dashboard = () => {
                     {foodItems.map(item => (
                       <tr key={item._id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
                         <td style={{ padding: '1rem' }}>{item.name}</td>
-                        <td style={{ padding: '1rem' }}>${item.price} <span className="text-muted text-sm line-through">${item.originalPrice}</span></td>
+                        <td style={{ padding: '1rem' }}>{formatCurrency(item.price)} <span className="text-muted text-sm line-through">{formatCurrency(item.originalPrice)}</span></td>
                         <td style={{ padding: '1rem' }}>{item.quantity}</td>
                         <td style={{ padding: '1rem' }}>
                           <button 
@@ -210,12 +211,12 @@ const Dashboard = () => {
                       {order.items.map((item, idx) => (
                         <div key={idx} className="flex justify-between text-sm">
                           <span>{item.quantity}x {item.foodId?.name}</span>
-                          <span>${item.price * item.quantity}</span>
+                          <span>{formatCurrency(item.price * item.quantity)}</span>
                         </div>
                       ))}
                       <div className="border-t border-gray-600 mt-2 pt-2 font-bold flex justify-between">
                         <span>Total:</span>
-                        <span>${order.totalAmount}</span>
+                        <span>{formatCurrency(order.totalAmount)}</span>
                       </div>
                     </div>
                     

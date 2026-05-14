@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Tag, DollarSign, Navigation } from 'lucide-react';
+import { formatCurrency } from '../utils/formatCurrency';
 
 // Fix for default marker icons in React Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -113,8 +114,8 @@ const MapComponent = ({ userLocation, foodItems }) => {
                     <div key={item._id} className="map-popup-food-item">
                       <div className="font-bold" style={{ fontSize: '0.95rem' }}>{item.name}</div>
                       <div className="flex justify-between items-center mt-1">
-                        <span className="text-primary font-bold">${item.price.toFixed(2)}</span>
-                        <span className="text-xs text-muted line-through">${item.originalPrice.toFixed(2)}</span>
+                        <span className="text-primary font-bold">{formatCurrency(item.price)}</span>
+                        <span className="text-xs text-muted line-through">{formatCurrency(item.originalPrice)}</span>
                         <span className="text-xs ml-2 px-2 py-1 rounded-full" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--primary-color)' }}>
                           {item.quantity} left
                         </span>
