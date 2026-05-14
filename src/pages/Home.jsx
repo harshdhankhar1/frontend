@@ -114,6 +114,67 @@ const Home = () => {
     toast.success(`${item.name} added to cart`);
   };
 
+  const handleBuyNow = async (item) => {
+    if (!user) {
+      toast.error('Please login to place an order');
+      return;
+    }
+    if (user.role === 'restaurant') {
+      toast.error('Restaurants cannot place orders');
+      return;
+    }
+
+    try {
+      const keyRes = await axios.get('/payment/key');
+      const key = keyRes.data.key;
+
+      const orderRes = await axios.post('/payment/create-order', {
+        restaurantId: item.restaurantId?._id || item.restaurantId,
+        items: [{ foodId: item._id, quantity: 1 }]
+      });
+
+      const orderData = orderRes.data;
+
+      const options = {
+        key: key,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Food Rescue",
+        description: `Order for ${item.name}`,
+        order_id: orderData.id,
+        handler: async function (response) {
+          try {
+            await axios.post('/payment/verify-payment', {
+              ...response,
+              restaurantId: item.restaurantId?._id || item.restaurantId,
+              items: [{ foodId: item._id, quantity: 1 }],
+              totalAmount: orderData.totalAmount
+            });
+            toast.success('Payment successful! Order placed.');
+            fetchFoodItems(userLocation?.lat, userLocation?.lng);
+          } catch (err) {
+            toast.error('Payment verification failed');
+          }
+        },
+        prefill: {
+          name: user.name,
+          email: user.email,
+        },
+        theme: {
+          color: "#10b981",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response){
+        toast.error('Payment Failed!');
+      });
+      rzp.open();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to initiate payment');
+    }
+  };
+
   return (
     <div>
       <div className="flex flex-col items-center text-center mb-8">
@@ -228,14 +289,22 @@ const Home = () => {
                     </span>
                   </div>
                   
-                  <div className="food-card-footer mt-4">
+                  <div className="food-card-footer mt-4 flex gap-2">
                     <button 
-                      className="btn btn-primary w-full" 
-                      style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+                      className="btn btn-primary" 
+                      style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+                      onClick={() => handleBuyNow(item)}
+                      disabled={user?.role === 'restaurant'}
+                    >
+                      Buy Now
+                    </button>
+                    <button 
+                      className="btn btn-outline" 
+                      style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
                       onClick={() => addToCart(item)}
                       disabled={user?.role === 'restaurant'}
                     >
-                      <Tag size={16} /> Add to Cart
+                      <Tag size={16} /> Cart
                     </button>
                   </div>
                 </div>

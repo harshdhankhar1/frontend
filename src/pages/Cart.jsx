@@ -60,32 +60,59 @@ const Cart = () => {
   const handleCheckout = async () => {
     if (cart.length === 0) return;
     
-    // Group items by restaurant
-    const ordersByRestaurant = {};
-    cart.forEach(item => {
-      if (!ordersByRestaurant[item.restaurantId]) {
-        ordersByRestaurant[item.restaurantId] = [];
-      }
-      ordersByRestaurant[item.restaurantId].push({
-        foodId: item.foodId,
-        quantity: item.quantity
-      });
-    });
-
     setLoading(true);
     try {
-      // Place an order for each restaurant involved
-      for (const restaurantId in ordersByRestaurant) {
-        await axios.post('/orders', {
-          restaurantId,
-          items: ordersByRestaurant[restaurantId]
-        });
-      }
-      
-      toast.success('Orders placed successfully!');
-      setCart([]);
-      localStorage.removeItem('cart');
-      fetchOrders();
+      const keyRes = await axios.get('/payment/key');
+      const key = keyRes.data.key;
+
+      // Use the first item's restaurantId for simplicity in DB
+      const mainRestaurantId = cart[0].restaurantId;
+      const itemsPayload = cart.map(item => ({ foodId: item.foodId, quantity: item.quantity }));
+
+      const orderRes = await axios.post('/payment/create-order', {
+        restaurantId: mainRestaurantId,
+        items: itemsPayload
+      });
+
+      const orderData = orderRes.data;
+
+      const options = {
+        key: key,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Food Rescue",
+        description: `Cart Checkout`,
+        order_id: orderData.id,
+        handler: async function (response) {
+          try {
+            await axios.post('/payment/verify-payment', {
+              ...response,
+              restaurantId: mainRestaurantId,
+              items: itemsPayload,
+              totalAmount: orderData.totalAmount
+            });
+            toast.success('Payment successful! Orders placed.');
+            setCart([]);
+            localStorage.removeItem('cart');
+            fetchOrders();
+          } catch (err) {
+            toast.error('Payment verification failed');
+          }
+        },
+        prefill: {
+          name: user.name,
+          email: user.email,
+        },
+        theme: {
+          color: "#10b981",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response){
+        toast.error('Payment Failed!');
+      });
+      rzp.open();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Checkout failed');
     } finally {
