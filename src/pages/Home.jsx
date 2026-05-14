@@ -3,6 +3,7 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { MapPin, Clock, DollarSign, Filter, Tag } from 'lucide-react';
+import MapComponent from '../components/MapComponent';
 
 // Haversine formula to calculate distance between two coordinates in km
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -113,6 +114,8 @@ const Home = () => {
           Save money while helping the planet.
         </p>
       </div>
+
+      <MapComponent userLocation={userLocation} foodItems={foodItems} />
 
       <div className="glass-panel p-4 mb-8">
         <div className="flex items-center gap-4 flex-wrap">

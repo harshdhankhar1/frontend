@@ -343,3 +343,34 @@ a:hover {
     display: none;
   }
 }
+
+/* Leaflet Map Overrides */
+.leaflet-container {
+  border-radius: 1rem;
+  z-index: 10;
+  border: 1px solid var(--glass-border);
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--bg-dark);
+  color: var(--text-dark);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+}
+
+.leaflet-popup-tip {
+  background: var(--bg-dark);
+}
+
+.leaflet-popup-close-button {
+  color: var(--text-muted) !important;
+}
+
+.map-popup-food-item {
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0.5rem 0;
+}
+
+.map-popup-food-item:last-child {
+  border-bottom: none;
+}
